@@ -3,7 +3,9 @@
 package book_test
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"strconv"
 	"strings"
 	"testing"
@@ -44,7 +46,7 @@ func (suite *BookTestSuite) TestCreateBook() {
 	req := httptest.NewRequest(
 		"POST",
 		"/api/v1/book",
-		strings.NewReader(`{"title":"Test Book", "author": "Elliot", "rating": 5}`),
+		strings.NewReader(`{"ISIN": 12345, "title":"Test Book", "author": "Elliot", "rating": 5}`),
 	)
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Content-Length", strconv.FormatInt(req.ContentLength, 10))
@@ -57,15 +59,55 @@ func (suite *BookTestSuite) TestCreateBook() {
 	var bookTest book.Book
 	database.DBConn.Where("title = ?", "Test Book").First(&bookTest)
 	fmt.Println(bookTest)
-	// assert.Equal(suite.T(), bookTest.Title, "Test Book")
+	assert.Equal(suite.T(), bookTest.Title, "Test Book")
 }
 
 func (suite *BookTestSuite) TestReadBook() {
-	// Implement
+	req := httptest.NewRequest(
+		"GET",
+		"/api/v1/book/1",
+		nil,
+	)
+	res, err := suite.app.Test(req, -1)
+	assert.NoError(suite.T(), err)
+	assert.Equal(suite.T(), http.StatusOK, res.StatusCode)
+
+	var testbook book.Book
+	body, _ := ioutil.ReadAll(res.Body)
+	json.Unmarshal(body, &testbook)
+
+	assert.Equal(suite.T(), "Test Book", testbook.Title)
 }
 
 func (suite *BookTestSuite) TestDeleteBook() {
-	// Implement
+	req := httptest.NewRequest(
+		"POST",
+		"/api/v1/book",
+		strings.NewReader(`{"ISIN": 45678, "title":"Test Book", "author": "Elliot", "rating": 5}`),
+	)
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Content-Length", strconv.FormatInt(req.ContentLength, 10))
+
+	res, err := suite.app.Test(req, -1)
+
+	assert.NoError(suite.T(), err)
+	assert.Equal(suite.T(), http.StatusOK, res.StatusCode)
+
+	req = httptest.NewRequest(
+		"DELETE",
+		"/api/v1/book/45678",
+		nil,
+	)
+	res, err = suite.app.Test(req, -1)
+	assert.NoError(suite.T(), err)
+	assert.Equal(suite.T(), http.StatusOK, res.StatusCode)
+
+	// var testbook book.Book
+	body, _ := ioutil.ReadAll(res.Body)
+	fmt.Println(string(body))
+	// json.Unmarshal(body, &testbook)
+
+	// assert.Equal(suite.T(), "Test Book", testbook.Title)
 }
 
 func TestBookTestSuite(t *testing.T) {
