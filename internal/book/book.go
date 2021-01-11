@@ -3,7 +3,7 @@ package book
 import (
 	"fmt"
 
-	"github.com/elliotforbes/go-fiber-tutorial/database"
+	"github.com/elliotforbes/go-fiber-tutorial/internal/database"
 	"github.com/gofiber/fiber"
 	"github.com/jinzhu/gorm"
 )

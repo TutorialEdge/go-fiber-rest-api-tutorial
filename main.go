@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/elliotforbes/go-fiber-tutorial/database"
-	"github.com/elliotforbes/go-fiber-tutorial/transport"
+	"github.com/elliotforbes/go-fiber-tutorial/internal/database"
+	"github.com/elliotforbes/go-fiber-tutorial/internal/transport"
 
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )

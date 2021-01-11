@@ -1,7 +1,7 @@
 package transport
 
 import (
-	"github.com/elliotforbes/go-fiber-tutorial/book"
+	"github.com/elliotforbes/go-fiber-tutorial/internal/book"
 	"github.com/gofiber/fiber"
 )
 
