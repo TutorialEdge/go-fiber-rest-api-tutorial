@@ -1,13 +1,16 @@
 package book
 
 import (
-	"github.com/elliotforbes/go-fiber-tutorial/database"
+	"fmt"
+
+	"github.com/elliotforbes/go-fiber-tutorial/internal/database"
 	"github.com/gofiber/fiber"
 	"github.com/jinzhu/gorm"
 )
 
 type Book struct {
 	gorm.Model
+	ISIN   int    `json:"ISIN"`
 	Title  string `json:"title"`
 	Author string `json:"author"`
 	Rating int    `json:"rating"`
@@ -42,11 +45,13 @@ func NewBook(c *fiber.Ctx) {
 }
 
 func DeleteBook(c *fiber.Ctx) {
-	id := c.Params("id")
+	ISIN := c.Params("isin")
 	db := database.DBConn
 
+	fmt.Println(ISIN)
+
 	var book Book
-	db.First(&book, id)
+	db.Find(&book, "ISIN = ?", ISIN)
 	if book.Title == "" {
 		c.Status(500).Send("No book found with given ID")
 		return
