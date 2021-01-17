@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -13,9 +14,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/elliotforbes/go-fiber-tutorial/book"
-	"github.com/elliotforbes/go-fiber-tutorial/database"
-	"github.com/elliotforbes/go-fiber-tutorial/transport"
+	"github.com/elliotforbes/go-fiber-tutorial/internal/book"
+	"github.com/elliotforbes/go-fiber-tutorial/internal/database"
+	"github.com/elliotforbes/go-fiber-tutorial/internal/transport"
 	"github.com/gofiber/fiber"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -40,6 +41,13 @@ func (suite *BookTestSuite) SetupSuite() {
 	suite.app = transport.Setup()
 	database.InitDatabase()
 	database.DBConn.AutoMigrate(&book.Book{})
+}
+
+func (suite *BookTestSuite) TearDownSuite() {
+	err := os.Remove("books.db")
+	if err != nil {
+
+	}
 }
 
 func (suite *BookTestSuite) TestCreateBook() {
@@ -102,12 +110,8 @@ func (suite *BookTestSuite) TestDeleteBook() {
 	assert.NoError(suite.T(), err)
 	assert.Equal(suite.T(), http.StatusOK, res.StatusCode)
 
-	// var testbook book.Book
 	body, _ := ioutil.ReadAll(res.Body)
 	fmt.Println(string(body))
-	// json.Unmarshal(body, &testbook)
-
-	// assert.Equal(suite.T(), "Test Book", testbook.Title)
 }
 
 func TestBookTestSuite(t *testing.T) {
